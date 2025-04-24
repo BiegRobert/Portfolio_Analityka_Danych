@@ -1,4 +1,4 @@
--- Task 1
+-- Task 1 -- O której godzinie najczęściej występują przejazdy z podwyższoną stawką? --
 
 SELECT 
   HOUR(time_stamp) AS hour_of_day,
@@ -9,7 +9,7 @@ WHERE surge_multiplier <> 1
 GROUP BY HOUR(time_stamp)
 ORDER BY count desc
 
--- Task 2
+-- Task 2 -- Jaki wpływ mają opady deszczu na średnią cenę przejazdu? --
 
 select
 	floor(rain*20)/20 as floor_rain
@@ -29,7 +29,7 @@ group by
 order by
 	1
 
--- Task 3
+-- Task 3 -- Czy duże zachmurzenie (>75%) powoduje wzrost liczby przejazdów? --
 
 select
 	case
@@ -47,7 +47,7 @@ join weather_br wb
 group by
 	1
 
--- Task 4
+-- Task 4 -- Jak różnią się średnie ceny przejazdów między weekendami a dniami roboczymi? --
 
 SELECT 
     CASE 
@@ -60,7 +60,7 @@ FROM
 GROUP BY 
     typ_dnia;
 
--- Task 5
+-- Task 5 -- W której dzielnicy najczęściej występują przejazdy z podwyższyoną stawką? --
 
 SELECT 
   source,
@@ -71,7 +71,7 @@ WHERE surge_multiplier <> 1
 GROUP BY source
 ORDER BY count desc
 
--- Task 6
+-- Task 6 -- Jakie są średnie ceny przejazdów w zależności od wilgotności? --
 
 select
 	floor(humidity*20)/20 as floor_humidity
@@ -89,7 +89,7 @@ group by
 order by
 	1
 	
--- Task 7
+-- Task 7 -- Czy ceny różnią się znacząco między Uberem a Lyftem przy podobnych dystansach (+/- 0,5 mili)? --
 
 WITH
 avg_price_Uber AS (
@@ -160,7 +160,7 @@ JOIN
 ORDER BY 
   u.floor_distance;
 
--- Task 8
+-- Task 8 -- W jakim dniu tygodnia najczęściej dochodzi do podwyższenia cen? --
 
 SELECT 
 	DAYOFWEEK(time_stamp) AS day_number
@@ -180,7 +180,7 @@ where surge_multiplier > 1
 group by 1
 order by 2 desc
 
--- Task 9
+-- Task 9 -- Znajdź 3 najdroższe przejazdy z każdej dzielnicy (source) --
 
 SELECT 
   source,
@@ -198,7 +198,7 @@ from
 WHERE 
   most_expensive_rides <= 3
   
- -- Task 10
+ -- Task 10 -- Znajdź przejazdy, które są rekordowo długie dla każdego typu przejazdu (product_name) --
   
  SELECT 
   name
