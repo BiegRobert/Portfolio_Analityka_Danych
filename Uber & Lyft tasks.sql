@@ -216,3 +216,65 @@ from
 WHERE 
   longest_rides <= 1
  order by 2 desc
+ 
+ -- Task 11 -- Dane dla Uber wg dni tygodnia
+ 
+WITH peak_hours AS (
+    SELECT 
+        DAYNAME(time_stamp) as day_name,
+        HOUR(time_stamp) as hour_of_day,
+        COUNT(*) as ride_count,
+        ROW_NUMBER() OVER (PARTITION BY DAYNAME(time_stamp) ORDER BY COUNT(*) DESC) as rn
+    FROM cab_rides_br
+    WHERE cab_type = "Uber"
+    GROUP BY DAYNAME(time_stamp), HOUR(time_stamp)
+)
+SELECT
+    m.day_name,
+    m.count_uber,
+    m.average_price_uber,
+    m.average_distance_uber,
+    p.hour_of_day as peak_hour_uber
+FROM (
+    SELECT
+        DAYNAME(time_stamp) AS day_name,
+        count(*) as count_uber,
+        round(avg(price), 2) as average_price_uber,
+        round(avg(distance), 2) as average_distance_uber
+    FROM cab_rides_br
+    WHERE cab_type = "Uber"
+    GROUP BY 1
+    ORDER BY 2 DESC
+) as m
+JOIN peak_hours p ON m.day_name = p.day_name AND p.rn = 1
+
+-- Task 12 -- Dane dla Lyft wg dni tygodnia
+
+WITH peak_hours AS (
+    SELECT 
+        DAYNAME(time_stamp) as day_name,
+        HOUR(time_stamp) as hour_of_day,
+        COUNT(*) as ride_count,
+        ROW_NUMBER() OVER (PARTITION BY DAYNAME(time_stamp) ORDER BY COUNT(*) DESC) as rn
+    FROM cab_rides_br
+    WHERE cab_type = "Lyft"
+    GROUP BY DAYNAME(time_stamp), HOUR(time_stamp)
+)
+SELECT
+    m.day_name,
+    m.count_lyft,
+    m.average_price_lyft,
+    m.average_distance_lyft,
+    p.hour_of_day as peak_hour_lyft
+FROM (
+    SELECT
+        DAYNAME(time_stamp) AS day_name,
+        count(*) as count_lyft,
+        round(avg(price), 2) as average_price_lyft,
+        round(avg(distance), 2) as average_distance_lyft
+    FROM cab_rides_br
+    WHERE cab_type = "Lyft"
+    GROUP BY 1
+    ORDER BY 2 DESC
+) as m
+JOIN peak_hours p ON m.day_name = p.day_name AND p.rn = 1
