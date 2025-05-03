@@ -6,6 +6,13 @@
 -- ############################################################################
 
 -- ############################################################################
+-- Analiza bazuje na dataset:
+-- 'Uber & Lyft Cab prices' ('cab_rides.csv', 'weather.csv')
+-- link do pobrania:
+-- https://www.kaggle.com/datasets/ravi72munde/uber-lyft-cab-prices
+-- ############################################################################
+
+-- ############################################################################
 -- # Zadanie 1: Analiza godzin z podwyższoną stawką
 -- ############################################################################
 -- # Cel: Identyfikacja godzin, w których najczęściej występują przejazdy 
