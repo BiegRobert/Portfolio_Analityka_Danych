@@ -51,7 +51,7 @@ ORDER BY
 
 SELECT
   -- Kategoryzacja poziomu opadów po przeliczeniu z cali na milimetry (przedziały co 0.05 mm)
-  floor(rain * 25.4 * 20) / 20 AS floor_rain_mm,
+  floor(rain * 25.4 * 0.5) / 0.5 AS floor_rain_mm,
 
   -- Obliczenie średniej ceny przejazdu dla każdego przedziału opadów w milimetrach
   round(avg(price), 2) AS avg_price_by_rain
@@ -72,7 +72,6 @@ GROUP BY floor_rain_mm
 
 -- Sortowanie wyników rosnąco według poziomu opadów
 ORDER BY floor_rain_mm;
-
 
 -- ############################################################################
 -- # Zadanie 3: Wpływ zachmurzenia na liczbę przejazdów
