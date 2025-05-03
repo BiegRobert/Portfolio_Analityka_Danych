@@ -50,20 +50,28 @@ ORDER BY
 -- ############################################################################
 
 SELECT
-  -- Kategoryzacja poziomu opadów deszczu na przedziały co 0.05
-  floor(rain*20)/20 as floor_rain,
-  -- Obliczenie średniej ceny dla każdego przedziału opadów
-  round(avg(price), 2) as avg_price_by_rain
+  -- Kategoryzacja poziomu opadów po przeliczeniu z cali na milimetry (przedziały co 0.05 mm)
+  floor(rain * 25.4 * 20) / 20 AS floor_rain_mm,
+
+  -- Obliczenie średniej ceny przejazdu dla każdego przedziału opadów w milimetrach
+  round(avg(price), 2) AS avg_price_by_rain
+
 FROM
   cab_rides_br crb
--- Połączenie tabeli przejazdów z danymi pogodowymi
+
+-- Połączenie danych o przejazdach z odpowiadającymi im danymi pogodowymi
 JOIN weather_br wb 
   ON crb.time_stamp = wb.time_stamp
   AND crb.source = wb.location
--- Wykluczenie rekordów z brakującymi danymi o opadach
-WHERE floor(rain*20)/20 IS NOT NULL
-GROUP BY 1
-ORDER BY 1;
+
+-- Wykluczenie rekordów bez danych o opadach
+WHERE rain IS NOT NULL
+
+-- Grupowanie wyników według przeliczonego i zaokrąglonego poziomu opadów
+GROUP BY floor_rain_mm
+
+-- Sortowanie wyników rosnąco według poziomu opadów
+ORDER BY floor_rain_mm;
 
 
 -- ############################################################################
