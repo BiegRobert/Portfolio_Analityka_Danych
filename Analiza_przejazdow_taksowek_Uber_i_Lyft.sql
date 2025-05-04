@@ -399,54 +399,50 @@ ORDER BY 2 DESC;
 -- # - Optymalizacja strategii cenowej
 -- ############################################################################
 
-WITH
-
+WITH 
 -- CTE do znalezienia godzin z największą liczbą przejazdów dla każdego dnia
 peak_hours AS (
-    SELECT
-        -- Ekstrakcja nazwy dnia tygodnia
-        DAYNAME(time_stamp) AS day_name,
-        -- Ekstrakcja godziny dnia
-        HOUR(time_stamp) AS hour_of_day,
-        -- Zliczanie przejazdów w danej godzinie
-        COUNT(*) AS ride_count,
-        -- Użycie funkcji okna do znalezienia godziny z największą liczbą przejazdów
-        ROW_NUMBER() OVER (PARTITION BY DAYNAME(time_stamp) ORDER BY COUNT(*) DESC) AS rn
-    FROM cab_rides_br
-    WHERE cab_type = "Uber"
-    GROUP BY DAYNAME(time_stamp), HOUR(time_stamp)
+  SELECT
+    -- Ekstrakcja nazwy dnia tygodnia
+    DAYNAME(time_stamp) AS day_name,
+    -- Ekstrakcja godziny dnia
+    HOUR(time_stamp) AS hour_of_day,
+    -- Zliczanie przejazdów w danej godzinie
+    COUNT(*) AS ride_count,
+    -- Użycie funkcji okna do znalezienia godziny z największą liczbą przejazdów
+    ROW_NUMBER() OVER (PARTITION BY DAYNAME(time_stamp) ORDER BY COUNT(*) DESC) AS rn
+  FROM cab_rides_br
+  WHERE cab_type = "Uber"
+  GROUP BY DAYNAME(time_stamp), HOUR(time_stamp)
 )
-
 SELECT
-    m.day_name,
-    m.count_uber,
-    m.average_price_uber,
-    m.average_distance_uber,
-    -- Formatowanie godziny szczytu
-    MAKETIME(p.hour_of_day, 0, 0) AS peak_hour_uber,
-    -- Dodanie kolumny total_revenue obliczającej sumę ceny z tabeli źródłowej
-    ROUND(SUM(br.price), 0) AS total_revenue_uber
-
+  m.day_name,
+  m.count_uber,
+  m.average_price_uber,
+  m.average_distance_uber,
+  -- Formatowanie godziny szczytu
+  MAKETIME(p.hour_of_day, 0, 0) AS peak_hour_uber,
+  -- Dodanie kolumny total_revenue obliczającej sumę ceny z tabeli źródłowej
+  ROUND(SUM(br.price), 0) AS total_revenue_uber
 FROM (
-    -- Subquery do obliczenia podstawowych statystyk dla Ubera według dni tygodnia
-    SELECT
-        DAYNAME(time_stamp) AS day_name,
-        COUNT(*) AS count_uber,
-        ROUND(AVG(price), 2) AS average_price_uber,
-        ROUND(AVG(distance), 2) AS average_distance_uber
-    FROM cab_rides_br
-    WHERE cab_type = "Uber"
-    GROUP BY 1
-    ORDER BY 2 DESC
+  -- Subquery do obliczenia podstawowych statystyk dla Ubera według dni tygodnia
+  SELECT
+    DAYNAME(time_stamp) AS day_name,
+    COUNT(*) AS count_uber,
+    ROUND(AVG(price), 2) AS average_price_uber,
+    ROUND(AVG(distance), 2) AS average_distance_uber
+  FROM cab_rides_br
+  WHERE cab_type = "Uber"
+  GROUP BY 1
+  ORDER BY 2 DESC
 ) AS m
-
 -- Połączenie wyników z danymi o godzinach szczytowych
 JOIN peak_hours p ON m.day_name = p.day_name AND p.rn = 1
-
--- Połączenie z tabelą źródłową, aby obliczyć całkowity przychód
-JOIN cab_rides_br br ON m.day_name = DAYNAME(br.time_stamp)
+-- Połączenie z tabelą źródłową, aby obliczyć całkowity przychód, dodany warunek dla Ubera
+JOIN cab_rides_br br ON m.day_name = DAYNAME(br.time_stamp) AND br.cab_type = "Uber"
 GROUP BY m.day_name, m.count_uber, m.average_price_uber, m.average_distance_uber, p.hour_of_day
 ORDER BY m.day_name;
+
 
 
 
@@ -478,7 +474,6 @@ peak_hours AS (
   WHERE cab_type = "Lyft"
   GROUP BY DAYNAME(time_stamp), HOUR(time_stamp)
 )
-
 SELECT
   m.day_name,
   m.count_lyft,
@@ -502,8 +497,8 @@ FROM (
 ) AS m
 -- Połączenie wyników z danymi o godzinach szczytowych
 JOIN peak_hours p ON m.day_name = p.day_name AND p.rn = 1
--- Połączenie z tabelą źródłową, aby obliczyć całkowity przychód
-JOIN cab_rides_br br ON m.day_name = DAYNAME(br.time_stamp)
+-- Połączenie z tabelą źródłową, aby obliczyć całkowity przychód, dodany warunek dla Lyfta
+JOIN cab_rides_br br ON m.day_name = DAYNAME(br.time_stamp) AND br.cab_type = "Lyft"
 GROUP BY m.day_name, m.count_lyft, m.average_price_lyft, m.average_distance_lyft, p.hour_of_day
 ORDER BY m.day_name;
 
