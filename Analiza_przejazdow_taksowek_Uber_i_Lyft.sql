@@ -1,5 +1,5 @@
 -- ############################################################################
--- # Portfolio Analityka Danych - Analiza przejazdów taksówek Uber i Lyft #
+-- # Portfolio Analityka Danych - Analiza przejazdów taksówek Uber & Lyft #
 -- ############################################################################
 -- # Autor: Robert Bieg
 -- # Data: 03-05-2025
