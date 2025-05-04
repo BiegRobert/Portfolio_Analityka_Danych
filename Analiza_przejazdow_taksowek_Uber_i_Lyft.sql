@@ -565,3 +565,28 @@ JOIN max_rides m ON r.source = m.source AND r.rides_in_hour = m.max_rides
 GROUP BY c.source, r.ride_hour, r.rides_in_hour
 -- Sortowanie według łącznej liczby przejazdów
 ORDER BY total_rides DESC;
+
+-- ############################################################################
+-- # Zadanie 15: Analiza przychodów i średnich cen za kilometr według lokalizacji początkowej
+-- ############################################################################
+-- # Cel: Analiza całkowitych przychodów oraz średnich cen za kilometr dla różnych
+-- # lokalizacji początkowych, z uwzględnieniem podziału na usługodawców.
+-- #
+-- # Wartość biznesowa:
+-- # - Identyfikacja najbardziej dochodowych lokalizacji początkowych
+-- # - Porównanie efektywności cenowej tras zaczynających się w różnych punktach miasta
+-- # - Analiza strategii cenowej Uber vs Lyft w różnych lokalizacjach
+-- # - Optymalizacja alokacji pojazdów w oparciu o dochodowość lokalizacji
+-- ############################################################################
+
+SELECT 
+    source AS district,
+    cab_type AS cab_type,
+    ROUND(SUM(price), 0) AS total_revenue,
+    ROUND(SUM(price) / SUM(distance * 1.60934), 2) AS avg_price_per_km
+FROM 
+    cab_rides_br
+GROUP BY 
+    source, cab_type
+ORDER BY 
+    source, cab_type;
